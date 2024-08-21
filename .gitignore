@@ -1,0 +1,27 @@
+# Ignore the target directory, where compiled files are stored
+/target/
+
+# Ignore the Cargo.lock file if you're building a library
+# (this file should be included if you're building an application)
+/Cargo.lock
+
+# Ignore the .idea directory (for JetBrains IDEs)
+/.idea/
+
+# Ignore the .vscode directory (for Visual Studio Code)
+/.vscode/
+
+# Ignore the .DS_Store file (macOS specific)
+.DS_Store
+
+# Ignore the node_modules directory (if using Node.js)
+/node_modules/
+
+# Ignore the .rustup directory (Rust toolchain specific)
+/.rustup/
+
+# Ignore the .cargo directory (Cargo configuration specific)
+/.cargo/
+
+# Ignore the .rustc_info.json file (Rust compiler specific)
+/.rustc_info.json
