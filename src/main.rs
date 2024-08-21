@@ -1,6 +1,7 @@
 use device_query::{DeviceQuery, DeviceState, MouseState, Keycode};
 use std::fs::File;
 use std::io::Write;
+use std::process::Command;
 use std::thread;
 use std::time::Duration;
 
@@ -62,6 +63,7 @@ fn main() -> std::io::Result<()> {
         loop {
             let keys: Vec<Keycode> = device_state.get_keys();
             if keys.contains(&Keycode::Q) {
+                println!("Quitting...");
                 return Ok(());
             } else if keys.contains(&Keycode::P) {
                 break;
