@@ -49,6 +49,7 @@ fn main() -> std::io::Result<()> {
             all_positions.push((action_name.clone(), pos));
         }
 
+        // Write to CSV after each action
         let mut file = File::create("cursor_positions.csv")?;
         writeln!(file, "Action,X,Y")?;
         for (action, pos) in &all_positions {
@@ -62,7 +63,11 @@ fn main() -> std::io::Result<()> {
         loop {
             let keys: Vec<Keycode> = device_state.get_keys();
             if keys.contains(&Keycode::Q) {
-                println!("Quitting...");
+                // Call the Python script to train the model
+                Command::new("python")
+                    .arg("action_predictor.py")
+                    .spawn()
+                    .expect("Failed to execute Python script");
                 return Ok(());
             } else if keys.contains(&Keycode::P) {
                 break;
