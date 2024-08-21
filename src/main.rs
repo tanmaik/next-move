@@ -49,7 +49,6 @@ fn main() -> std::io::Result<()> {
             all_positions.push((action_name.clone(), pos));
         }
 
-        // Write to CSV after each action
         let mut file = File::create("cursor_positions.csv")?;
         writeln!(file, "Action,X,Y")?;
         for (action, pos) in &all_positions {

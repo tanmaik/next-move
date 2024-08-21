@@ -38,6 +38,7 @@ def train_model(X, y):
     print(f"Model accuracy: {accuracy:.2f}")
     
     return model
+
 def predict_user_action(model, le, window_size=10):
     print("Recording cursor movements for 5 seconds.")
     
@@ -53,7 +54,7 @@ def predict_user_action(model, le, window_size=10):
             cursor_positions.append(current_position)
             last_position = current_position
         
-        time.sleep(0.01)  # Record every 10 ms
+        time.sleep(0.01)
     
     if len(cursor_positions) < window_size:
         print("Not enough cursor movements captured.")
@@ -63,7 +64,6 @@ def predict_user_action(model, le, window_size=10):
     prediction = model.predict([feature])[0]
     action = le.inverse_transform([prediction])[0]
     
-    # Get confidence scores
     probabilities = model.predict_proba([feature])[0]
     confidence_scores = {le.inverse_transform([i])[0]: prob for i, prob in enumerate(probabilities)}
     
