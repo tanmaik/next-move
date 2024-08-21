@@ -13,6 +13,7 @@
 
 # Ignore the .DS_Store file (macOS specific)
 .DS_Store
+cursor_positions.csv
 
 # Ignore the node_modules directory (if using Node.js)
 /node_modules/
