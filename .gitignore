@@ -7,5 +7,7 @@ cursor_positions.csv
 /node_modules/
 /.rustup/
 /.cargo/
+*.h5
+
 /.rustc_info.json
 venv/
