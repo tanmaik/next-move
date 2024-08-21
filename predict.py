@@ -1,16 +1,13 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential, load_model
+from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-import os
 
-# Load and preprocess the data
 data = pd.read_csv('cursor_positions.csv', header=None, names=['x', 'y'])
 scaler = MinMaxScaler()
 data_scaled = scaler.fit_transform(data)
 
-# Create sequences
 def create_sequences(data, seq_length):
     xs, ys = [], []
     for i in range(len(data) - seq_length):
@@ -21,12 +18,9 @@ def create_sequences(data, seq_length):
 seq_length = 10
 X, y = create_sequences(data_scaled, seq_length)
 
-# Split into training and testing sets
 split = int(0.8 * len(X))
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
-
-# Build and train the model (if not already trained)
 
 model = Sequential([
     LSTM(50, return_sequences=True, input_shape=(seq_length, 2)),
@@ -35,17 +29,13 @@ model = Sequential([
 ])
 model.compile(optimizer='adam', loss='mse')
 model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
-# model.save('')
 
-
-# Function to predict next position
 def predict_next_position(current_sequence):
     current_sequence_scaled = scaler.transform(current_sequence)
     prediction_scaled = model.predict(np.array([current_sequence_scaled]))
     prediction = scaler.inverse_transform(prediction_scaled)[0]
     return prediction
 
-# Example usage
 print("Enter 'q' to quit.")
 while True:
     try:
@@ -55,7 +45,6 @@ while True:
         print("Exiting...")
         break
 
-    # Get the last 9 positions from the data and add the current position
     last_positions = data.iloc[-9:].values.tolist()
     last_positions.append([current_x, current_y])
 
