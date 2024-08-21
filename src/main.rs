@@ -13,11 +13,10 @@ fn main() {
         println!("Cursor position: ({}, {})", x, y);
         cursor_positions.push((x, y));
 
-        // Write to CSV file
         let mut file = OpenOptions::new()
             .write(true)
             .create(true)
-            .truncate(true)
+            .append(true)
             .open("cursor_positions.csv")
             .unwrap();
 
