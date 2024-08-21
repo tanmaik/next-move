@@ -63,12 +63,37 @@ fn main() -> std::io::Result<()> {
         loop {
             let keys: Vec<Keycode> = device_state.get_keys();
             if keys.contains(&Keycode::Q) {
-                // Call the Python script to train the model
-                Command::new("python")
-                    .arg("action_predictor.py")
-                    .spawn()
-                    .expect("Failed to execute Python script");
-                return Ok(());
+                println!("Press 'r' to replay actions or 'm' to quit and train.");
+                loop {
+                    let keys: Vec<Keycode> = device_state.get_keys();
+                    if keys.contains(&Keycode::R) {
+                        let status = Command::new("go")
+                            .arg("run")
+                            .arg("main.go")
+                            .status()
+                            .expect("Failed to execute Go script");
+
+                        if status.success() {
+                            println!("Go script executed successfully.");
+                        } else {
+                            println!("Go script execution failed.");
+                        }
+                        return Ok(());
+                    } else if keys.contains(&Keycode::M) {
+                        let status = Command::new("python")
+                            .arg("action_predictor.py")
+                            .status()
+                            .expect("Failed to execute Python script");
+
+                        if status.success() {
+                            println!("Python script executed successfully.");
+                        } else {
+                            println!("Python script execution failed.");
+                        }
+                        return Ok(());
+                    }
+                    thread::sleep(Duration::from_millis(10));
+                }
             } else if keys.contains(&Keycode::P) {
                 break;
             }

@@ -10,4 +10,5 @@ cursor_positions.csv
 *.h5
 
 /.rustc_info.json
+*.pkl
 venv/
