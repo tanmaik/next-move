@@ -1,45 +1,64 @@
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import LSTM, Dense
+import os
 
-# load the data
+# Load and preprocess the data
 data = pd.read_csv('cursor_positions.csv', header=None, names=['x', 'y'])
-
-# normalize the data
 scaler = MinMaxScaler()
-data[['x', 'y']] = scaler.fit_transform(data[['x', 'y']])
+data_scaled = scaler.fit_transform(data)
 
-# create sequences
+# Create sequences
 def create_sequences(data, seq_length):
     xs, ys = [], []
     for i in range(len(data) - seq_length):
-        x = data.iloc[i:(i + seq_length)].values
-        y = data.iloc[i + seq_length].values
-        xs.append(x)
-        ys.append(y)
+        xs.append(data[i:i+seq_length])
+        ys.append(data[i+seq_length])
     return np.array(xs), np.array(ys)
 
 seq_length = 10
-X, y = create_sequences(data, seq_length)
+X, y = create_sequences(data_scaled, seq_length)
 
-# split into training and testing sets
+# Split into training and testing sets
 split = int(0.8 * len(X))
 X_train, X_test = X[:split], X[split:]
 y_train, y_test = y[:split], y[split:]
 
-# build the lstm model
-model = Sequential()
-model.add(LSTM(50, return_sequences=True, input_shape=(seq_length, 2)))
-model.add(LSTM(50))
-model.add(Dense(2))
+# Build and train the model (if not already trained)
 
+model = Sequential([
+    LSTM(50, return_sequences=True, input_shape=(seq_length, 2)),
+    LSTM(50),
+    Dense(2)
+])
 model.compile(optimizer='adam', loss='mse')
-
-# train the model
 model.fit(X_train, y_train, epochs=10, batch_size=32, validation_split=0.2)
+# model.save('')
 
-# evaluate the model
-loss = model.evaluate(X_test, y_test)
-print(f'test loss: {loss}')
+
+# Function to predict next position
+def predict_next_position(current_sequence):
+    current_sequence_scaled = scaler.transform(current_sequence)
+    prediction_scaled = model.predict(np.array([current_sequence_scaled]))
+    prediction = scaler.inverse_transform(prediction_scaled)[0]
+    return prediction
+
+# Example usage
+print("Enter 'q' to quit.")
+while True:
+    try:
+        current_x = float(input("Enter current X coordinate: "))
+        current_y = float(input("Enter current Y coordinate: "))
+    except ValueError:
+        print("Exiting...")
+        break
+
+    # Get the last 9 positions from the data and add the current position
+    last_positions = data.iloc[-9:].values.tolist()
+    last_positions.append([current_x, current_y])
+
+    predicted_position = predict_next_position(last_positions)
+    print(f"Predicted next position: X={predicted_position[0]:.2f}, Y={predicted_position[1]:.2f}")
+    print()
